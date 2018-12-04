@@ -8,3 +8,7 @@ The alarm system about tasks in Jira on GO
     заполняем все параметры
 5. ```go run main.go``` или если хочется отдельный бинарничек ```go build && ./jirasignal```
 
+
+Эта программа переделка вот этой прогаммы: https://github.com/Osuka42g/JiraNotifier
+
+GPL
