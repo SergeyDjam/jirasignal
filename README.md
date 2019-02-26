@@ -6,7 +6,7 @@ The alarm system about tasks in Jira on GO
 3. ```mv .env.example .env```
 4. ```vi .env ```
     заполняем все параметры
-5. ```go run main.go``` или если хочется отдельный бинарничек ```go build && ./jirasignal```
+5. ```go run main.go``` или если хочется отдельный бинарничек ```go build && ./jirasignal``` или ```go get github.com/SergeyDjam/jirasignal && go/bin/jirasignal```
 
 
 Эта программа переделка вот этой прогаммы: https://github.com/Osuka42g/JiraNotifier
