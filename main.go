@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"strconv"
 
 	jira "github.com/andygrunwald/go-jira"
 	notify "github.com/TheCreeper/go-notify"
@@ -16,6 +17,7 @@ type jiraConfig struct {
 	username string
 	password string
 	jql	 string
+	timeout  string
 }
 
 type jiraIssue struct {
@@ -35,7 +37,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	jc := jiraConfig{host: os.Getenv("JIRA_HOST"), username: os.Getenv("JIRA_USERNAME"), password: os.Getenv("JIRA_PASSWORD"), jql: os.Getenv("JIRA_JQL")}
+	jc := jiraConfig{host: os.Getenv("JIRA_HOST"), username: os.Getenv("JIRA_USERNAME"), password: os.Getenv("JIRA_PASSWORD"), jql: os.Getenv("JIRA_JQL"), timeout: os.Getenv("TIMEOUT") }
 
 	jiraClient, err := jira.NewClient(nil, jc.host)
 	if err != nil {
@@ -47,11 +49,15 @@ func main() {
 		panic(err)
 	}
 
-//	jql := "resolution = Unresolved AND updated >= -15m AND assignee in (" + jc.username + ") ORDER BY updated DESC"
 	jql := jc.jql
 
 	for {
 		issues, _, _ := jiraClient.Issue.Search(jql, nil)
+		i, err := strconv.ParseInt(jc.timeout, 10, 32)
+                if err != nil {
+                    panic(err)
+                }
+
 		if len(issues) > 0 {
 			for _, issue := range issues {
 
@@ -59,12 +65,12 @@ func main() {
 				fmt.Println(issue.Key, "has some changes ->", jiraIssue{&issue}.getLink(), "at", timeNow())
 
 				go func(n notification) {
-					sendNotification(n)
-					time.Sleep(5 * time.Second)
+				    sendNotification(n)
+				    time.Sleep( time.Duration(i) * time.Second)
 				}(n)
 			}
 		}
-		time.Sleep((1 * time.Minute) - (1 * time.Second))
+		time.Sleep(( time.Duration(i) * time.Minute) - (1 * time.Second))
 	}
 }
 
